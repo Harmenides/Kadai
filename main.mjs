@@ -13,7 +13,7 @@ app.get("/", async (request, response) => {
   const posts = await prisma.post.findMany();
   const html = template.replace(
     "<!-- posts -->",
-    posts.map((post) => `<li>${escapeHTML(post.message)}</li>`).join(""),
+    posts.map((post) => `<li>${escapeHTML(post.id)}-${escapeHTML(post.message)}</li>`).join(""),
   );
   response.send(html);
 });
@@ -24,5 +24,13 @@ app.post("/send", async (request, response) => {
   });
   response.redirect("/");
 });
+
+app.post("/clear", async(request, response) =>{
+  await prisma.post.delete({where:{
+    id: Number(request.body.idnumber)
+  },})
+
+  response.redirect("/")
+})
 
 app.listen(3000);
